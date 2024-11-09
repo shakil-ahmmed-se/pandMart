@@ -1,5 +1,7 @@
 import express from "express";
-import { query, validationResult, body } from "express-validator";
+import { query, validationResult, body, matchedData , checkSchema} from "express-validator";
+import { createUserValidationSchema } from "./utils/validationSchema.mjs";
+import { getUserValidationSchema } from "./utils/getValidationSchema.mjs";
 
 const PORT = process.env.PORT || 3000;
 
@@ -43,52 +45,34 @@ app.get(
 );
 
 // qurey parameters like /api/user?filter=username&value=will
-app.get(
-  "/api/users",
-  query("filter")
-    .isString()
-    .notEmpty()
-    .withMessage("Must be not empty")
-    .isLength({ min: 3, max: 10 })
-    .withMessage("Must be 3-10 characters"),
-  (req, res, next) => {
+app.get("/api/users",checkSchema(getUserValidationSchema) ,(req, res) => {
     // console.log(req);
     const result = validationResult(req);
     console.log(result);
+    if(!result.isEmpty())
+      return res.status(400).send({errors: result.array()});
     const {
       query: { filter, value },
     } = req;
     // when filter and value were undefine
-    if (!filter && !value) return res.send(mockUsers);
+    // if (!filter && !value) return res.send(mockUsers);
     if (filter && value)
       return res.send(mockUsers.filter((user) => user[filter].includes(value)));
     return res.send(mockUsers);
   }
 );
 
-app.post(
-  "/api/users",
-  [body("username")
-    .isString()
-    .notEmpty()
-    .withMessage("username not empty")
-    .isLength({ min: 5, max: 32 })
-    .withMessage("Username must be 5-32 characters"),
-    body("displayName").notEmpty(),
-  ],
-  (req, res) => {
+app.post("/api/users",checkSchema(createUserValidationSchema), (req, res) => {
+
     const result = validationResult(req);
     console.log(result);
-    if (!result.isEmpty)
-      return res.status(400).send({errors : result.array()})
-    const { body } = req;
-    if (!body.username && !body.displayName)
-      return res
-        .status(400)
-        .json({ msg: "username or displayName is required" });
+    
+    if (!result.isEmpty())
+      return res.status(400).send({ errors: result.array() });
+    const data = matchedData(req);
+    // console.log(data)
     const newUser = {
-      id: mockUsers[mockUsers.length - 1].id + 1,
-      ...body,
+      id: mockUsers[mockUsers.length - 1].id + 1, ...data,
     };
     mockUsers.push(newUser);
     return res.status(201).send(mockUsers);
