@@ -6,6 +6,7 @@ export const getUserValidationSchema ={
         notEmpty:{
             errormessage:"Must be not empty",
         },
+        optional:true,
         isLength:{
             options:{
                 min:3,
