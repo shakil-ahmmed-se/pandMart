@@ -1,22 +1,20 @@
 import express from "express";
-import userRouter from "./routes/users.mjs";
-import productsRouter from "./routes/products.mjs"
+import routes from "./routes/index.mjs";
+import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 3012;
 
 const app = express();
 app.use(express.json());
-
+// cookieParser
+app.use(cookieParser());
 // user router use
-app.use(userRouter);
-app.use(productsRouter);
+app.use(routes);
 
 app.get("/", (req, res) => {
+  res.cookie("Hellow", "World", { maxAge:6000 * 60 * 2});
   res.status(200).send({ msg: "Hello Oworld" });
 });
-
-// qurey parameters like /api/user?filter=username&value=will
-
 
 
 app.listen(PORT, () => {

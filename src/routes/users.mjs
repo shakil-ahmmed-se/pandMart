@@ -7,6 +7,7 @@ import { resolveIndexByUserId } from "../utils/middlewares.mjs";
 
 const router = Router();
 
+// qurey parameters like /api/user?filter=username&value=will
 router.get("/api/users",checkSchema(getUserValidationSchema) ,(req, res) => {
     // console.log(req);
     const result = validationResult(req);
