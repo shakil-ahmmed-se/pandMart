@@ -10,6 +10,15 @@ const router = Router();
 // qurey parameters like /api/user?filter=username&value=will
 router.get("/api/users",checkSchema(getUserValidationSchema) ,(req, res) => {
     // console.log(req);
+    console.log(req.session);
+    console.log(req.session.id);
+    req.sessionStore.get(req.session.id, (err, sessionData)=>{
+      if(err){
+        console.log(err);
+        throw err;
+      }
+      console.log(sessionData);
+    })
     const result = validationResult(req);
     console.log(result);
     if(!result.isEmpty())
