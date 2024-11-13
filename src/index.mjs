@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3012;
 
 const app = express();
 
-mongoose.connect("mongodb://localhost/pandaMart")
+mongoose.connect("mongodb://localhost:27017/pandaMart")
   .then(() => console.log('Connected to mongodb'))
   .catch((err) => console.log(err))
 app.use(express.json());
